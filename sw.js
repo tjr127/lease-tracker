@@ -1,5 +1,5 @@
 /* Lets the app open with no signal. Bump VERSION whenever you change the app files. */
-const VERSION = 'lease-tracker-v1';
+const VERSION = 'lease-tracker-v2';
 const SHELL = [
   './',
   'index.html',

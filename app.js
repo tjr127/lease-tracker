@@ -180,6 +180,22 @@
     over: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5h6l3.5 3.5v6L12 15.5H6L2.5 12V6z"/><path d="M9 5.8v4M9 12.2v.1"/></svg>'
   };
 
+  let lastViewKey = null;
+
+  // The Sheet address and passphrase are usually pasted from another app, one at a time.
+  // Keep them as you go, so leaving the app (or Android closing it) does not lose them.
+  function restoreDraft() {
+    const draft = store.get('lt.draft.v1', null);
+    if (!draft) return;
+    const u = $('#cUrl'), k = $('#cKey');
+    if (u && !u.value && draft.url) u.value = draft.url;
+    if (k && !k.value && draft.key) k.value = draft.key;
+  }
+  function saveDraft() {
+    const u = $('#cUrl'), k = $('#cKey');
+    if (u && k) store.set('lt.draft.v1', { url: u.value, key: k.value });
+  }
+
   function render() {
     const v = activeVehicle();
     if (v && ui.activeId !== v.id) { ui.activeId = v.id; persist(); }
@@ -193,9 +209,19 @@
     document.body.classList.toggle('no-log', !v || ui.tab === 'setup' || addingVehicle);
 
     const view = $('#view');
+    // Redrawing the same form (after switching apps, or a background sync) must not wipe what was typed.
+    const viewKey = [ui.tab, v ? v.id : '', addingVehicle, conn.url ? 'connected' : 'local'].join('|');
+    const typed = {};
+    if (viewKey === lastViewKey) {
+      view.querySelectorAll('input').forEach(el => { if (el.id) typed[el.id] = el.value; });
+    }
+    lastViewKey = viewKey;
     if (ui.tab === 'setup' || !v) view.innerHTML = setupHtml(addingVehicle ? null : v);
     else if (ui.tab === 'history') view.innerHTML = historyHtml(v);
     else view.innerHTML = statusHtml(v);
+
+    Object.keys(typed).forEach(id => { const el = document.getElementById(id); if (el) el.value = typed[id]; });
+    restoreDraft();
 
     if (ui.tab === 'status' && v) wireChart(v);
     if (ui.tab === 'setup' || !v) wireSetup(addingVehicle ? null : v);
@@ -603,10 +629,11 @@
     });
 
     const form = $('#connForm');
+    if (form) form.addEventListener('input', saveDraft);
     if (form) form.addEventListener('submit', async ev => {
       ev.preventDefault();
       const err = $('#connError'), btn = $('#connectBtn');
-      const url = $('#cUrl').value.trim(), key = $('#cKey').value;
+      const url = $('#cUrl').value.trim(), key = $('#cKey').value.trim();
       if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) {
         err.textContent = 'The URL should look like https://script.google.com/macros/s/…/exec';
         return;
@@ -617,6 +644,7 @@
         await callSheet(url, key, []);                // a read-only test before anything is stored
         conn = { url: url, key: key, lastSaved: null };
         store.set('lt.conn.v1', conn);
+        try { localStorage.removeItem('lt.draft.v1'); } catch (e) { /* nothing to clear */ }
         // everything already on this phone gets written to the Sheet on first sync
         queue = state.vehicles.map(x => ({ type: 'upsertVehicle', vehicle: x }))
           .concat(state.readings.map(x => ({ type: 'upsertReading', reading: x })));
@@ -770,6 +798,11 @@
   syncNow();
 
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    const hadWorker = !!navigator.serviceWorker.controller;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (hadWorker && !reloaded) { reloaded = true; location.reload(); }   // a new version just took over
+    });
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
 })();
