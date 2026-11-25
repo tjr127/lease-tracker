@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lease Tracker</title>
+<meta name="description" content="Track lease mileage against the allowance. Data lives in your own Google Sheet.">
+<meta name="theme-color" content="#E8EBE7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A2327" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preload" href="fonts/overpass-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="vehicle-btn" id="vehicleBtn" type="button" aria-haspopup="dialog">
+    <span id="vehicleName">Lease Tracker</span>
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l4 4 4-4"/></svg>
+  </button>
+  <button class="sync" id="syncBtn" type="button" data-state="local"><span id="syncText">On this phone only</span><i aria-hidden="true"></i></button>
+</header>
+
+<main class="wrap" id="view"></main>
+
+<button class="log-btn" id="logBtn" type="button">Log odometer</button>
+
+<nav class="tabs" aria-label="Sections">
+  <button type="button" data-tab="status">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18a8 8 0 1116 0"/><path d="M12 18l4-6"/></svg>
+    Status
+  </button>
+  <button type="button" data-tab="history">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"/></svg>
+    History
+  </button>
+  <button type="button" data-tab="setup">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h8M17 8h2M5 16h2M11 16h8"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></svg>
+    Lease setup
+  </button>
+</nav>
+
+<dialog id="logDialog" aria-labelledby="logTitle">
+  <form class="inner" id="logForm" novalidate>
+    <h2 id="logTitle">Log odometer</h2>
+    <p class="lede" id="logLede"></p>
+    <div class="stack" style="display:grid;gap:16px;margin-top:16px">
+      <div class="field">
+        <label for="logOdo">Odometer reading</label>
+        <input class="big" id="logOdo" inputmode="numeric" autocomplete="off" enterkeyhint="done" placeholder="0">
+        <p class="hint" id="logPreview"></p>
+      </div>
+      <div class="field">
+        <label for="logDate">Date read</label>
+        <input id="logDate" type="date">
+      </div>
+      <div class="field">
+        <label for="logNote">Note (optional)</label>
+        <input id="logNote" autocomplete="off" maxlength="120" placeholder="Road trip, service visit…">
+      </div>
+      <p class="error" id="logError" role="alert"></p>
+      <div class="btn-row">
+        <button class="btn quiet" type="button" data-close>Cancel</button>
+        <button class="btn primary" type="submit">Save reading</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="vehicleDialog" aria-labelledby="vehTitle">
+  <div class="inner">
+    <h2 id="vehTitle">Vehicles</h2>
+    <div class="vehicle-list" id="vehicleList"></div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn quiet" type="button" data-close>Close</button>
+      <button class="btn" type="button" id="addVehicleBtn">Add a vehicle</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="confirmDialog" aria-labelledby="confirmTitle">
+  <div class="inner">
+    <h2 id="confirmTitle"></h2>
+    <p class="lede" id="confirmBody"></p>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn quiet" type="button" data-close>Keep it</button>
+      <button class="btn danger" type="button" id="confirmYes"></button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="lease-math.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
