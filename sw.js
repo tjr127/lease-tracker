@@ -1,6 +1,6 @@
 /* Lets the app open with no signal. Bump VERSION whenever you change the app files
    (and APP_VERSION at the top of app.js, which is the number shown under Lease setup). */
-const VERSION = 'lease-tracker-v3';
+const VERSION = 'lease-tracker-v4';
 const SHELL = [
   './',
   'index.html',
@@ -9,8 +9,8 @@ const SHELL = [
   'app.js',
   'manifest.webmanifest',
   'fonts/overpass-latin-wght-normal.woff2',
-  'icons/icon-192.png',
-  'icons/icon-512.png',
+  'icons/car-192.png',
+  'icons/car-512.png',
   'google-sheet/Code.gs'
 ];
 

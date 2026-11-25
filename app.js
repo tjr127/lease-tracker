@@ -3,7 +3,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 3;                              // keep in step with VERSION in sw.js
+  const APP_VERSION = 4;                              // keep in step with VERSION in sw.js
   const M = window.LeaseMath;
   const $ = sel => document.querySelector(sel);
 
