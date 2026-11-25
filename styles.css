@@ -315,3 +315,5 @@ body::after {
   background: linear-gradient(to bottom, transparent, var(--concrete) 55%);
 }
 body.no-log::after { display: none; }
+
+.version { margin-top: 34px; color: var(--ink-2); font-size: .84rem; }

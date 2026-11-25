@@ -74,6 +74,6 @@ The lease end date is the start date plus the lease length in calendar months.
 
 ## Changing the app later
 
-Edit the files and push. Then bump `VERSION` at the top of `sw.js` (for example `lease-tracker-v2`)
-so phones pick up the new files. If you change `Code.gs`, paste it into Apps Script again and use
+Edit the files and push. Then bump `VERSION` at the top of `sw.js` and `APP_VERSION` at the top of
+`app.js` so phones pick up the new files. The version number shows at the bottom of Lease setup. If you change `Code.gs`, paste it into Apps Script again and use
 Deploy > Manage deployments > edit > Version: New version, which keeps the same URL.
